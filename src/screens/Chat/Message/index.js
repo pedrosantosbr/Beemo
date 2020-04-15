@@ -9,54 +9,88 @@ import {
   Modal,
   Platform
 } from 'react-native';
-import LeftMessage from '~/screens/Chat/Message/LeftMessage';
-import RightMessage from '~/screens/Chat/Message/RightMessage';
+import { getTime } from '~/helpers/getTime';
 
 const fullWidth = Dimensions.get('window').width;
 const fullHeight = Dimensions.get('window').height;
 
 const Message = ({ navigation, otherSender, message }) => {
-  let mv = otherSender ? 10 : 2
+  let containerPosition = otherSender ? 'flex-start' : 'flex-end'
 
   return (
-    <View style={[{ marginVertical: mv }, styles.container, (otherSender ? styles.positionToLeft : styles.positionToRight)]}>
-      <View style={[styles.bubble, (otherSender ? styles.leftBubble : styles.rightBubble)]}>
-        {otherSender ?
-          (
-            <LeftMessage message={message} />
-          ) :
-          (
-            <RightMessage message={message} />
-          )
-        }
-      </View>
+    <View>
+      {otherSender ?
+        (
+          <View style={[styles.container, { justifyContent: 'flex-start' }]}>
+            <View style={[styles.message, styles.leftMessage]}>
+              <Text style={[styles.messageText, styles.leftMessageText]}>
+                {message.body || ''}
+              </Text>
+              <Text style={styles.dateSent}>
+                {getTime(message.date_sent)}
+              </Text>
+            </View>
+          </View>
+        ) :
+        (
+          <View style={[styles.container, { justifyContent: 'flex-end' }]}>
+            <View style={[styles.message, styles.rightMessage]}>
+              <Text style={[styles.rightMessageText, styles.messageText]}>
+                {message.body || ''}
+              </Text>
+              <View style={styles.rightDateSent}>
+                <Text style={[styles.dateSent, { color: '#389046' }]}>
+                  {getTime(message.date_sent)}
+                </Text>
+                <MessageSendState send_state={message.send_state} />
+              </View>
+            </View>
+          </View>
+        )
+      }
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    width: fullWidth,
-    flex: 1,
+    padding: 3,
     flexDirection: 'row',
-    paddingHorizontal: 15,
+    marginBottom: 2,
   },
-  bubble: {
+  message: {
     padding: 10,
     borderRadius: 18,
-    maxWidth: fullWidth * .6,
+    alignItems: 'flex-end',
+    maxWidth: fullWidth * .7,
   },
-  positionToRight: {
-    justifyContent: 'flex-end'
-  },
-  positionToLeft: {
-    justifyContent: 'flex-start'
-  },
-  leftBubble: {
+  leftMessage: {
     backgroundColor: '#E4E4E2',
   },
-  rightBubble: {
+  rightMessage: {
     backgroundColor: '#53D769',
+  },
+  messageText: {
+    fontSize: 16
+  },
+  leftMessageText: {
+    color: '#292929',
+  },
+  rightMessageText: {
+    color: '#fff',
+    alignSelf: 'flex-start',
+  },
+  dateSent: {
+    color: 'grey',
+    marginLeft: 3,
+    alignSelf: 'flex-end',
+    fontSize: 12,
+  },
+  rightDateSent: {
+    width: 50,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'center'
   }
 })
 

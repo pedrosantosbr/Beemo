@@ -30,6 +30,20 @@ const Chat = ({ props }) => {
       {
         id: 'afj3129*34',
         sender_id: 2,
+        body: 'Sei como que as coisas são, mas nunca quis compreender, ignorância julgamentos em porque, ideias que, foram deixadas para trás, seguir em frente o que passou não volta mais.',
+        date_sent: new Date(),
+        send_state: 2
+      },
+      {
+        id: 'afj3129*34',
+        sender_id: 1,
+        body: 'Sei como que as coisas são, mas nunca quis compreender, ignorância julgamentos em porque, ideias que, foram deixadas para trás, seguir em frente o que passou não volta mais.',
+        date_sent: new Date(),
+        send_state: 2
+      },
+      {
+        id: 'afj3129*34',
+        sender_id: 2,
         body: 'Fico no aguardo.',
         date_sent: new Date(),
         send_state: 2
@@ -73,6 +87,13 @@ const Chat = ({ props }) => {
         id: 'adk109*14',
         sender_id: 1,
         body: 'Boa noite, gostaria de fazer um pedido.',
+        date_sent: new Date(),
+        send_state: 3
+      },
+      {
+        id: 'adk109*14',
+        sender_id: 1,
+        body: 'Heeey',
         date_sent: new Date(),
         send_state: 3
       },
@@ -126,7 +147,7 @@ const Chat = ({ props }) => {
       }
       <FlatList
         data={history}
-        inverted
+        style={{ paddingHorizontal: 15 }}
         keyExtractor={_keyExtractor}
         renderItem={({ item }) => _renderMessageItem(item)}
         onEndReachedThreshold={5}
