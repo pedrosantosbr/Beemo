@@ -1,0 +1,14 @@
+version: "3.7"
+services:
+  ejabberd:
+    image: rroemhild/ejabberd
+    ports:
+      - 5222:5222
+      - 5269:5269
+      - 5280:5280
+    environment:
+      - ERLANG_NODE=ejabberd
+      - EJABBERD_ADMINS=admin@localhost
+      - EJABBERD_USERS=admin@localhost:passw0rd user1@localhost:passw0rd
+      - TZ=America/Sao_Paulo
+      - EJABBERD_STARTTLS=false

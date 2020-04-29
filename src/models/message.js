@@ -3,13 +3,14 @@ export const STATUS_SENT = 1
 export const STATUS_DELIVERED = 2
 export const STATUS_READ = 3
 
+import AsyncStorage from '@react-native-community/async-storage';
+
 const defaultMessage = {
   id: '',
   body: '',
   dialog_id: '',
   date_sent: Math.floor(Date.now() / 1000),
   sender_id: null,
-  sender: null
 }
 
 export default class Message {
@@ -17,22 +18,14 @@ export default class Message {
     this.id = msg.id || msg._id
     this.body = msg.body || msg.message
     this.dialog_id = msg.dialog_id
-    this.date_sent = msg.date_sent || (msg.extension && msg.extension.date_sent) || Math.floor(Date.now() / 1000)
-    // this.send_state = Message.getSendState(msg, currentUser)
-    this.sender_id = msg.sender_id || (msg.extension && msg.extension.sender_id)
-    this.sender = msg.sender_id
+    this.date_sent = msg.date_sent || Math.floor(Date.now() / 1000)
+    this.sender_id = msg.sender_id
+    // this.dialog_id = Message.getDialogId(msg.sender_id)
   }
 
-  static getSendState(msg, currentUser) {
-    // if (msg ?.read_ids ?.find(_id => _id !== currentUser)) {
-    //   return STATUS_READ
-    // }
-    // if (msg ?.delivered_ids ?.find(msg => msg.delivered_ids !== currentUser)) {
-    //   return STATUS_DELIVERED
-    // }
-    return STATUS_PENDING
+  static getDialogId(sender_id) {
+    return '24923';
   }
-
 }
 
 export class FakeMessage {

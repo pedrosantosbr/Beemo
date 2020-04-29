@@ -80,6 +80,8 @@ target 'Beemo' do
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
+
+
   target 'BeemoTests' do
     inherit! :complete
     # Pods for testing

@@ -66,9 +66,6 @@ PODS:
     - boost-for-react-native
     - DoubleConversion
     - glog
-  - GCDWebServer (3.5.4):
-    - GCDWebServer/Core (= 3.5.4)
-  - GCDWebServer/Core (3.5.4)
   - glog (0.3.5)
   - OpenSSL-Universal (1.0.2.19):
     - OpenSSL-Universal/Static (= 1.0.2.19)
@@ -297,20 +294,17 @@ PODS:
     - React-cxxreact (= 0.62.2)
     - React-jsi (= 0.62.2)
     - ReactCommon/callinvoker (= 0.62.2)
-  - ReactNativeAutogrowTextinput (5.3.0):
-    - React
-  - RealmJS (5.0.3):
-    - GCDWebServer
+  - ReactNativeAutogrowTextinput (5.4.0):
     - React
   - RNCAsyncStorage (1.9.0):
     - React
-  - RNCMaskedView (0.1.8):
+  - RNCMaskedView (0.1.10):
     - React
   - RNGestureHandler (1.6.1):
     - React
   - RNReanimated (1.8.0):
     - React
-  - RNScreens (2.4.0):
+  - RNScreens (2.7.0):
     - React
   - RNVectorIcons (6.6.0):
     - React
@@ -367,7 +361,6 @@ DEPENDENCIES:
   - ReactCommon/callinvoker (from `../node_modules/react-native/ReactCommon`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeAutogrowTextinput (from `../node_modules/react-native-autogrow-textinput`)
-  - RealmJS (from `../node_modules/realm`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
   - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
@@ -388,7 +381,6 @@ SPEC REPOS:
     - Flipper-PeerTalk
     - Flipper-RSocket
     - FlipperKit
-    - GCDWebServer
     - OpenSSL-Universal
     - YogaKit
 
@@ -445,8 +437,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   ReactNativeAutogrowTextinput:
     :path: "../node_modules/react-native-autogrow-textinput"
-  RealmJS:
-    :path: "../node_modules/realm"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-community/async-storage"
   RNCMaskedView:
@@ -477,7 +467,6 @@ SPEC CHECKSUMS:
   Flipper-RSocket: 64e7431a55835eb953b0bf984ef3b90ae9fdddd7
   FlipperKit: 6dc9b8f4ef60d9e5ded7f0264db299c91f18832e
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
-  GCDWebServer: 2c156a56c8226e2d5c0c3f208a3621ccffbe3ce4
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
   RCTRequired: cec6a34b3ac8a9915c37e7e4ad3aa74726ce4035
@@ -500,17 +489,16 @@ SPEC CHECKSUMS:
   React-RCTText: fae545b10cfdb3d247c36c56f61a94cfd6dba41d
   React-RCTVibration: 4356114dbcba4ce66991096e51a66e61eda51256
   ReactCommon: ed4e11d27609d571e7eee8b65548efc191116eb3
-  ReactNativeAutogrowTextinput: 14bd6349ec4fed9231ca141ad3f1dbadf2f63e4c
-  RealmJS: 85d246ec57ac1420faf933c282c0b379e61f38a0
+  ReactNativeAutogrowTextinput: 571f3260e200d91ea22fab160452f26d2fd5d55b
   RNCAsyncStorage: 453cd7c335ec9ba3b877e27d02238956b76f3268
-  RNCMaskedView: 4383c3140f1235391fd6029968c166f09ddd0973
+  RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNGestureHandler: 8f09cd560f8d533eb36da5a6c5a843af9f056b38
   RNReanimated: 955cf4068714003d2f1a6e2bae3fb1118f359aff
-  RNScreens: b5c0e1b2b04512919e78bd3898e144a157ce2363
+  RNScreens: cf198f915f8a2bf163de94ca9f5bfc8d326c3706
   RNVectorIcons: 0bb4def82230be1333ddaeee9fcba45f0b288ed4
   Yoga: 3ebccbdd559724312790e7742142d062476b698e
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: af0bdf853de3b4325a0261b6abee61f7d3c13062
+PODFILE CHECKSUM: ab2c6edff5c190623db27c944519342b64d0635a
 
 COCOAPODS: 1.8.4

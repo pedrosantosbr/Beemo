@@ -1,25 +1,16 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { View, FlatList, StatusBar, Text, StyleSheet } from 'react-native'
+import { connect } from 'react-redux'
+import store from '~/store'
+import ChatService from '~/services/chat-service'
 import Dialog from './Dialog'
 
-const Dialogs = ({ navigation }) => {
 
-  const dialogs = [{
-    title: 'Pedro Henrique',
-    message: 'Precisamos conversar...',
-    last_message: new Date(),
-    last_date: new Date(),
-    updated_date: new Date(),
-    unread_messages_count: 2
-  },
-  {
-    title: 'Carlos Henrique',
-    message: 'fala aê.',
-    last_message: new Date(),
-    last_date: new Date(),
-    updated_date: new Date(),
-    unread_messages_count: 1
-  }]
+const Dialogs = ({ navigation, dialogs }) => {
+  const [dialogsList, setDialogsList] = useState(dialogs)
+  useEffect(() => {
+    setDialogsList(dialogs)
+  }, [dialogs])
 
   keyExtractor = (item, index) => index.toString();
 
@@ -32,11 +23,12 @@ const Dialogs = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle={'dark-content'} />
-      <FlatList
-        data={dialogs}
-        keyExtractor={this.keyExtractor}
-        renderItem={(item) => this._renderDialog(item)}
-      />
+      {dialogsList.length > 0 &&
+        <FlatList
+          data={dialogsList}
+          keyExtractor={this.keyExtractor}
+          renderItem={(item) => this._renderDialog(item)}
+        />}
     </View>
   )
 }
@@ -61,4 +53,9 @@ Dialogs.navigationOptions = ({ navigation }) => {
   }
 }
 
-export default Dialogs
+const mapStateToProps = ({ dialogs, currentUser }) => ({
+  dialogs,
+  currentUser
+})
+
+export default connect(mapStateToProps)(Dialogs)

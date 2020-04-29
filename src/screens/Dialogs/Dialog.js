@@ -24,11 +24,10 @@ const Dialog = ({ dialog, navigation }) => {
           iconSize='large'
         />
         <View style={styles.dialog}>
-          <DialogTitle name={dialog.title} message={dialog.message} />
+          <DialogTitle name={dialog.user_id} message={dialog.last_message} />
           <View style={styles.infoContainer}>
             <DialogLastDate
-              lastDate={dialog.last_date}
-              lastMessage={dialog.last_message}
+              lastMessage={dialog.last_message_date_set}
               updatedDate={dialog.updated_date}
             />
             <DialogUnreadCounter

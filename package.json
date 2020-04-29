@@ -12,7 +12,11 @@
   "dependencies": {
     "@react-native-community/async-storage": "^1.8.1",
     "@react-native-community/masked-view": "^0.1.6",
+    "@xmpp/client": "0.9.2",
+    "@xmpp/debug": "^0.11.0",
     "axios": "^0.19.2",
+    "fs": "^0.0.1-security",
+    "md5": "^2.2.1",
     "prop-types": "^15.7.2",
     "react": "16.11.0",
     "react-native": "0.62.2",
@@ -25,9 +29,12 @@
     "react-navigation": "^4.3.7",
     "react-navigation-stack": "^2.3.11",
     "react-navigation-tabs": "^2.8.11",
+    "react-redux": "^7.2.0",
     "reactotron-react-native": "^5.0.0",
-    "realm": "^5.0.3",
-    "styled-components": "^5.1.0"
+    "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0",
+    "styled-components": "^5.1.0",
+    "uuid": "^7.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
