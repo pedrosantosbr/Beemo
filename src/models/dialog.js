@@ -17,21 +17,6 @@ export default class Dialog {
     name: 'Dialog',
     primaryKey: 'id',
     properties: {
-      id: { type: 'int', indexed: true },
-      user_id: 'string',
-      updated_date: 'date',
-      last_message: 'string?',
-      last_message_id: 'string?',
-      last_message_date_sent: 'date?',
-      unread_messages_count: 'int?',
-      unread_messages_ids: 'string?[]'
-    }
-  }
-
-  static schema2 = {
-    name: 'Dialog',
-    primaryKey: 'id',
-    properties: {
       id: { type: 'string', indexed: true },
       user_id: 'string',
       updated_date: 'int',

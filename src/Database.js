@@ -1,5 +1,6 @@
 const Realm = require('realm')
 import Dialog from '~/models/dialog'
+import Message from '~/models/message'
 
 class Database {
   constructor() {
@@ -9,8 +10,8 @@ class Database {
   init = async () => {
     try {
       Realm.open({
-        schema: [Dialog.schema2],
-        schemaVersion: 4,
+        schema: [Dialog.schema, Message.schema],
+        schemaVersion: 5,
         migration: (oldRealm, newRealm) => {
           // only apply this change if upgrading to schemaVersion 1
 

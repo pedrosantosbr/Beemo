@@ -147,7 +147,45 @@ class ChatService {
     });
   }
 
-  send() { }
+  send(jid, message) {
+    const stanzaParams = {
+      from: '21998859705@localhost',
+      to: jid + '@localhost',
+      type: message.type ? message.type : 'chat',
+      id: message.id ? message.id : Utils.getBsonObjectId()
+    };
+
+    let messageStanza = ChatUtils.createMessageStanza(stanzaParams);
+
+    if (message.body) {
+      messageStanza
+        .c('body', {
+          xmlns: 'jabber:client'
+        })
+        .t(message.body)
+        .up();
+    }
+
+    if (message.markable) {
+      messageStanza
+        .c('markable', {
+          xmlns: 'urn:xmpp:chat-markers:0'
+        })
+        .up();
+    }
+
+    if (message.extension) {
+      messageStanza.c('extraParams', {
+        xmlns: 'jabber:client'
+      });
+
+      messageStanza = ChatUtils.filledExtraParams(messageStanza, message.extension);
+    }
+
+    this.xmppClient.send(messageStanza);
+
+    return stanzaParams.id;
+  }
 
   sendSystemMessage(jidOrUserId, message) { }
 

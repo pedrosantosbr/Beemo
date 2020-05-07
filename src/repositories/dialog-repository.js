@@ -1,6 +1,5 @@
 import Database from '~/Database'
 import Dialog from '~/models/dialog'
-const realm = Database.shared.realm
 
 exports.create = (message) => {
   if (!message) return

@@ -98,6 +98,33 @@ class ChatInternalUtils {
     }
   }
 
+  static filledExtraParams(stanza, extension) {
+    Object.keys(extension).forEach(field => {
+      if (field === 'attachments') {
+        extension[field].forEach(attach => {
+          stanza
+            .getChild('extraParams')
+            .c('attachment', attach)
+            .up();
+
+        });
+      } else if (typeof extension[field] === 'object') {
+        this._JStoXML(field, extension[field], stanza);
+      } else {
+        stanza
+          .getChild('extraParams')
+          .c(field)
+          .t(extension[field])
+          .up();
+
+      }
+    });
+
+    stanza.up();
+
+    return stanza;
+  }
+
   static parseExtraParams(extraParams) {
     if (!extraParams) {
       return null;
@@ -150,7 +177,6 @@ class ChatInternalUtils {
       dialogId: dialogId
     };
   }
-
 }
 
 module.exports = ChatInternalUtils;

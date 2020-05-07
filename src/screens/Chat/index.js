@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux'
 import { AutoGrowingTextInput } from 'react-native-autogrow-textinput';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Message from './Message';
@@ -17,88 +18,25 @@ import {
 
 import Avatar from '../../components/avatar';
 const fullWidth = Dimensions.get('window').width;
+import ChatService from '~/services/chat-service'
 
-const Chat = ({ props }) => {
+const Chat = ({ history, currentUser, navigation }) => {
 
   const [formData, setFormData] = useState({
     activIndicator: false,
     messageText: '',
-    user: {
-      id: 1
-    },
-    history: [
-      {
-        id: 'afj3129*34',
-        sender_id: 2,
-        body: 'Sei como que as coisas são, mas nunca quis compreender, ignorância julgamentos em porque, ideias que, foram deixadas para trás, seguir em frente o que passou não volta mais.',
-        date_sent: new Date(),
-        send_state: 2
-      },
-      {
-        id: 'afj3129*34',
-        sender_id: 1,
-        body: 'Sei como que as coisas são, mas nunca quis compreender, ignorância julgamentos em porque, ideias que, foram deixadas para trás, seguir em frente o que passou não volta mais.',
-        date_sent: new Date(),
-        send_state: 2
-      },
-      {
-        id: 'afj3129*34',
-        sender_id: 2,
-        body: 'Fico no aguardo.',
-        date_sent: new Date(),
-        send_state: 2
-      },
-      {
-        id: 'afuu129*34',
-        sender_id: 2,
-        body: 'Quero sim, por favor',
-        date_sent: new Date(),
-        send_state: 2
-      },
-      {
-        id: 'afjg129*34',
-        sender_id: 1,
-        body: 'Quer que envie a localização?',
-        date_sent: new Date(),
-        send_state: 2
-      },
-      {
-        id: 'af2d129*34',
-        sender_id: 1,
-        body: 'Além do hamburguer, uma cocacola 2L',
-        date_sent: new Date(),
-        send_state: 2
-      },
-      {
-        id: 'afjd129*14',
-        sender_id: 1,
-        body: 'Gostaria de pedir um X egg bacon, por favor.',
-        date_sent: new Date(),
-        send_state: 2
-      },
-      {
-        id: 'adk129*14',
-        sender_id: 2,
-        body: 'Boa noite, o que gostaria de pedir?',
-        date_sent: new Date(),
-        send_state: 1,
-      },
-      {
-        id: 'adk109*14',
-        sender_id: 1,
-        body: 'Boa noite, gostaria de fazer um pedido.',
-        date_sent: new Date(),
-        send_state: 3
-      },
-      {
-        id: 'adk109*14',
-        sender_id: 1,
-        body: 'Heeey',
-        date_sent: new Date(),
-        send_state: 3
-      },
-    ]
   });
+
+  useEffect(() => {
+    let { dialog } = navigation.state.params
+    ChatService.getMessages(dialog)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      ChatService.resetSelectedDialog()
+    }
+  }, [])
 
   const needToGetMoreMessage = null;
 
@@ -107,22 +45,17 @@ const Chat = ({ props }) => {
   const onTypeMessage = messageText => setFormData({ ...formData, messageText })
 
   const sendMessage = async () => {
-    let { history, messageText } = formData
-    history.push({
-      id: 'adk102*14',
-      sender_id: 1,
-      body: messageText,
-      date_sent: new Date(),
-      send_state: 3
-    }, )
-    setFormData({ ...formData, history, messageText: '' })
+    const { dialog } = props.navigation.state.params
+    let { messageText } = formData
+    if (messageText.length <= 0) return
+    await ChatService.sendMessage(dialog, messageText)
+    setFormData({ ...formData, messageText: '' })
   }
 
   const sendAttachment = () => { }
 
   const _renderMessageItem = (message) => {
-    const { user } = formData
-    const isOtherSender = message.sender_id !== user.id ? true : false
+    const isOtherSender = message.sender_id !== currentUser.id ? true : false
     return (
       <Message otherSender={isOtherSender} message={message} key={message.id} />
     )
@@ -130,7 +63,7 @@ const Chat = ({ props }) => {
 
   const _keyExtractor = (item, index) => index.toString()
 
-  const { messageText, activIndicator, history } = formData
+  const { messageText, activIndicator } = formData
 
   return (
     <KeyboardAvoidingView
@@ -256,4 +189,10 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Chat
+const mapStateToProps = (state, props) => ({
+  history: state.messages[props.navigation.state.params.dialog.id],
+  currentUser: state.currentUser,
+  navigation: props.navigation
+})
+
+export default connect(mapStateToProps)(Chat)

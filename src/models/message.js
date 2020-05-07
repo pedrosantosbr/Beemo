@@ -17,7 +17,6 @@ export default class Message {
   constructor(msg = defaultMessage) {
     this.id = msg.id || msg._id
     this.body = msg.body || msg.message
-    this.dialog_id = msg.dialog_id
     this.date_sent = msg.date_sent || Date.now()
     this.sender_id = msg.sender_id
     this.dialog_id = Message.getDialogId(msg.sender_id)
@@ -27,6 +26,18 @@ export default class Message {
     const dialog = DialogRepository.getDialogBySenderId(sender_id)
     if (!dialog) return null
     return dialog.id
+  }
+
+  static schema = {
+    name: 'Message',
+    primaryKey: 'id',
+    properties: {
+      id: { type: 'string', indexed: true },
+      body: 'string',
+      sender_id: 'string',
+      date_sent: 'int',
+      dialog_id: 'string'
+    }
   }
 }
 
