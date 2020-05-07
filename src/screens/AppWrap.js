@@ -1,13 +1,14 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import ChatService from '~/services/chat-service';
 import AuthService from '~/services/auth-service';
+import Database from '~/Database';
 
 export default class AppWrap extends Component {
 
   constructor(props) {
-    super(props);
-    this.initUser();
+    super(props)
+    this.initUser()
   }
 
   initUser = async () => {
@@ -15,6 +16,7 @@ export default class AppWrap extends Component {
     const rootStackScreen = await AuthService.init()
     if (rootStackScreen === 'Dialogs') {
       ChatService.setUpListeners()
+      await Database.shared.init()
     }
     navigation.navigate(rootStackScreen)
   }
@@ -22,7 +24,6 @@ export default class AppWrap extends Component {
   render() {
     return (
       <View style={styles.container}>
-        {/* <Image style={styles.imageSize} source={require('../../assets/image/logo_with_text.png')} /> */}
         <Text>Beemo App</Text>
       </View>
     )

@@ -1,3 +1,5 @@
+import DialogRepository from '~/repositories/dialog-repository'
+
 const updateDialog = (action, dialogs) => {
   const alreadyUpdatedDialog = dialogs.map(elem => {
     if (elem.id === action.dialog.id) {
@@ -17,7 +19,9 @@ const sortedDialog = (action, dialogs) => {
         updated_date: message.date_sent,
         unread_messages_count: count ? elem.unread_messages_count += 1 : elem.unread_messages_count
       }
-      return Object.assign(elem, newObj)
+      let newDialog = Object.assign(elem, newObj)
+      DialogRepository.update(newDialog)
+      return newDialog
     } return elem
   })
 

@@ -1,16 +1,25 @@
 import BeemoApp from '~/Beemo/lib/beemoMain'
 import Message from '~/models/message'
-import Dialog from '~/models/dialog'
 import store from '~/store'
-import { sortDialogs, addNewDialog } from '../actions/dialogs'
+import Database from '~/Database'
+import DialogRepository from '~/repositories/dialog-repository'
+import { sortDialogs, addNewDialog, fetchDialogs } from '../actions/dialogs'
 import { pushMessage } from '../actions/messages'
-import { v4 as uuidv4 } from 'uuid';
-
-import AsyncStorage from '@react-native-community/async-storage';
-
+import Dialog from '~/models/dialog';
 class ChatService {
   setUpListeners() {
     BeemoApp.chat.onMessageListener = this.onMessageListener.bind(this)
+  }
+
+  fetchDialogsFromDatabase() {
+    const dialogs = []
+
+    Database.shared.realm.objects('Dialog').forEach((elem) => {
+      let dialog = new Dialog(elem)
+      dialogs.push(dialog)
+    })
+
+    store.dispatch(fetchDialogs(dialogs))
   }
 
   onMessageListener(msg) {
@@ -19,17 +28,8 @@ class ChatService {
     const dialog = this.getSelectedDialog()
 
     if (message.sender_id !== user.id) {
-      if (!message.dialog_id) {
-        const newObj = {
-          id: uuidv4(),
-          last_message: message.body,
-          last_message_date_sent: message.date_sent,
-          updated_date: message.date_sent,
-          unread_messages_count: 1,
-          user_id: message.sender_id,
-        }
-
-        const newDialog = new Dialog(newObj)
+      if (!message.dialog_id || message.dialog_id === null) {
+        const newDialog = DialogRepository.create(message)
         store.dispatch(addNewDialog(newDialog))
         store.dispatch(pushMessage(message, newDialog.id))
         return;
@@ -39,9 +39,8 @@ class ChatService {
         return
       } else {
         store.dispatch(sortDialogs(message, true))
+        store.dispatch(pushMessage(message, message.dialog_id))
       }
-
-      store.dispatch(pushMessage(message, message.dialog_id))
     }
   }
 

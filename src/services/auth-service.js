@@ -19,11 +19,11 @@ class AuthService {
     const checkUserSessionFromStore = await this.getUserSession()
     if (checkUserSessionFromStore) {
       const data = JSON.parse(checkUserSessionFromStore)
-      await this.signIn({ jid: data.jid, password: data.password })
+      await this.signIn({ jid: '24988435539@localhost', password: 'passw0rd' })
       return 'Dialogs'
     } else {
       // return 'Auth'
-      await this.signIn({ jid: 'user1@localhost', password: 'passw0rd' })
+      await this.signIn({ jid: '24988435539@localhost', password: 'passw0rd' })
       return 'Dialogs'
     }
   }

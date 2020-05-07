@@ -2,6 +2,8 @@ version: "3.7"
 services:
   ejabberd:
     image: rroemhild/ejabberd
+    volumes:
+      - ./docker/conf/:/opt/ejabberd/conf/
     ports:
       - 5222:5222
       - 5269:5269
@@ -9,6 +11,6 @@ services:
     environment:
       - ERLANG_NODE=ejabberd
       - EJABBERD_ADMINS=admin@localhost
-      - EJABBERD_USERS=admin@localhost:passw0rd user1@localhost:passw0rd
+      - EJABBERD_USERS=admin@localhost:passw0rd 24988435539@localhost:passw0rd 21998859705@localhost:passw0rd
       - TZ=America/Sao_Paulo
       - EJABBERD_STARTTLS=false

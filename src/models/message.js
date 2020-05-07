@@ -1,9 +1,9 @@
+import DialogRepository from '~/repositories/dialog-repository';
+
 export const STATUS_PENDING = 0
 export const STATUS_SENT = 1
 export const STATUS_DELIVERED = 2
 export const STATUS_READ = 3
-
-import AsyncStorage from '@react-native-community/async-storage';
 
 const defaultMessage = {
   id: '',
@@ -18,13 +18,15 @@ export default class Message {
     this.id = msg.id || msg._id
     this.body = msg.body || msg.message
     this.dialog_id = msg.dialog_id
-    this.date_sent = msg.date_sent || Math.floor(Date.now() / 1000)
+    this.date_sent = msg.date_sent || Date.now()
     this.sender_id = msg.sender_id
-    // this.dialog_id = Message.getDialogId(msg.sender_id)
+    this.dialog_id = Message.getDialogId(msg.sender_id)
   }
 
   static getDialogId(sender_id) {
-    return '24923';
+    const dialog = DialogRepository.getDialogBySenderId(sender_id)
+    if (!dialog) return null
+    return dialog.id
   }
 }
 

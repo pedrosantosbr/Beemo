@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { View, FlatList, StatusBar, Text, StyleSheet } from 'react-native'
+import Database from '~/Database'
 import { connect } from 'react-redux'
 import store from '~/store'
 import ChatService from '~/services/chat-service'
@@ -7,14 +8,18 @@ import Dialog from './Dialog'
 
 
 const Dialogs = ({ navigation, dialogs }) => {
-  const [dialogsList, setDialogsList] = useState(dialogs)
+
   useEffect(() => {
-    setDialogsList(dialogs)
-  }, [dialogs])
+    function loadDialogs() {
+      ChatService.fetchDialogsFromDatabase()
+    }
 
-  keyExtractor = (item, index) => index.toString();
+    loadDialogs()
+  }, [])
 
-  _renderDialog = ({ item }) => {
+  const keyExtractor = (item, index) => index.toString();
+
+  const _renderDialog = ({ item }) => {
     return (
       <Dialog dialog={item} navigation={navigation} />
     )
@@ -23,12 +28,11 @@ const Dialogs = ({ navigation, dialogs }) => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle={'dark-content'} />
-      {dialogsList.length > 0 &&
-        <FlatList
-          data={dialogsList}
-          keyExtractor={this.keyExtractor}
-          renderItem={(item) => this._renderDialog(item)}
-        />}
+      <FlatList
+        data={dialogs}
+        keyExtractor={keyExtractor}
+        renderItem={(item) => _renderDialog(item)}
+      />
     </View>
   )
 }
