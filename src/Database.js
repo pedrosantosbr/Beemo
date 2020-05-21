@@ -11,10 +11,9 @@ class Database {
     try {
       Realm.open({
         schema: [Dialog.schema, Message.schema],
-        schemaVersion: 5,
+        schemaVersion: 7,
         migration: (oldRealm, newRealm) => {
           // only apply this change if upgrading to schemaVersion 1
-
         }
       }).then(realm => {
         console.log(realm.path)

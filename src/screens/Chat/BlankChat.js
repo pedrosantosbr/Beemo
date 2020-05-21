@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { connect } from 'react-redux'
 import { AutoGrowingTextInput } from 'react-native-autogrow-textinput';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Message from './Message';
@@ -20,39 +20,21 @@ import Avatar from '../../components/avatar';
 const fullWidth = Dimensions.get('window').width;
 import ChatService from '~/services/chat-service'
 
-const Chat = ({ history, currentUser, navigation }) => {
+const BlankChat = ({ navigation }) => {
+  const history = []
+
   const [formData, setFormData] = useState({
     activIndicator: false,
     messageText: '',
   });
 
-  useEffect(() => {
-    let { dialog } = navigation.state.params;
-    if (dialog.hasOwnProperty('id')) {
-      ChatService.getMessages(dialog);
-    }
-  }, [])
-
-  useEffect(() => {
-    return () => {
-      ChatService.resetSelectedDialog();
-    }
-  }, [])
-
-  const needToGetMoreMessage = null;
-
-  const getMoreMessages = () => { }
-
   const onTypeMessage = messageText => setFormData({ ...formData, messageText })
 
   const sendMessage = async () => {
-    let { dialog } = navigation.state.params;
-    let { messageText } = formData;
-
-    if (messageText.length <= 0) return;
-
-    await ChatService.sendMessage(dialog, messageText);
-    setFormData({ ...formData, messageText: '' });
+    let { messageText } = formData
+    if (messageText.length <= 0) return
+    await ChatService.sendMessage(dialog, messageText)
+    setFormData({ ...formData, messageText: '' })
   }
 
   const sendAttachment = () => { }
@@ -65,6 +47,8 @@ const Chat = ({ history, currentUser, navigation }) => {
   }
 
   const _keyExtractor = (item, index) => index.toString()
+
+  const getMoreMessages = () => { }
 
   const { messageText, activIndicator } = formData
 
@@ -83,7 +67,6 @@ const Chat = ({ history, currentUser, navigation }) => {
       }
       <FlatList
         data={history}
-        inverted
         style={{ paddingHorizontal: 15 }}
         keyExtractor={_keyExtractor}
         renderItem={({ item }) => _renderMessageItem(item)}
@@ -111,7 +94,7 @@ const Chat = ({ history, currentUser, navigation }) => {
   )
 }
 
-Chat.navigationOptions = ({ navigation }) => {
+BlankChat.navigationOptions = ({ navigation }) => {
   return {
     headerTitle: () => (
       <Text numberOfLines={3} style={{ fontSize: 22, color: 'black' }}>
@@ -194,8 +177,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state, props) => ({
-  history: state.messages[props.navigation.state.params.dialog.id],
   currentUser: state.currentUser,
 })
 
-export default connect(mapStateToProps)(Chat)
+export default connect(mapStateToProps)(BlankChat)

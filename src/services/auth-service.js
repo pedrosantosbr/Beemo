@@ -1,7 +1,8 @@
-import AsyncStorage from '@react-native-community/async-storage';
-import BeemoApp from '~/Beemo/lib/beemoMain';
-import User from '../models/user';
-import store from '../store';
+import AsyncStorage from '@react-native-community/async-storage'
+import BeemoApp from '~/Beemo/lib/beemoMain'
+import User from '../models/user'
+import store from '../store'
+import Database from '~/Database'
 import { setCurrentUser, updateCurrentUser } from '../actions/currentUser'
 
 class AuthService {
@@ -9,8 +10,9 @@ class AuthService {
   static DEVICE_TOKEN_KEY = 'DEVICE_TOKEN_KEY'
 
   async init() {
-    await BeemoApp.init();
-    return this.autologin();
+    await Database.shared.init()
+    await BeemoApp.init()
+    return this.autologin()
   }
 
   async updateCurrentUser({ image, full_name, login }) { }
@@ -19,20 +21,18 @@ class AuthService {
     const checkUserSessionFromStore = await this.getUserSession()
     if (checkUserSessionFromStore) {
       const data = JSON.parse(checkUserSessionFromStore)
-      await this.signIn({ jid: '24988435539@localhost', password: 'passw0rd' })
+      await this.signIn(data)
       return 'Dialogs'
     } else {
-      // return 'Auth'
-      await this.signIn({ jid: '24988435539@localhost', password: 'passw0rd' })
-      return 'Dialogs'
+      return 'Auth'
     }
   }
 
   async signIn(params) {
-    await this.connect(params.jid, params.password);
-    const currentUser = new User(params);
-    store.dispatch(setCurrentUser(currentUser));
-    this.setUserSession(params);
+    await this.connect(params.jid, params.password)
+    const currentUser = new User(params)
+    store.dispatch(setCurrentUser(currentUser))
+    this.setUserSession(params)
     // const customSession = Object.assign({}, currentUser, { password: params.password })
   }
 

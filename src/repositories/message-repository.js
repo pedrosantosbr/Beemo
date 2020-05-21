@@ -1,9 +1,16 @@
 import Database from '~/Database'
 import Message from '~/models/message'
 
-exports.createOrUpdate = (message) => {
+exports.create = (message) => {
+  console.log('mensagem a ser criada', new Date(message.date_sent * 1000))
   Database.shared.realm.write(() => {
-    Database.shared.realm.create('Message', message, 'modified')
+    Database.shared.realm.create('Message', {
+      id: message.id,
+      body: message.body,
+      sender_id: message.sender_id,
+      date_sent: new Date(message.date_sent * 1000),
+      dialog_id: message.dialog_id
+    })
   })
 }
 

@@ -6,8 +6,9 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Dialogs from '~/screens/Dialogs';
 import Posts from '~/screens/Posts';
 import Chat from '~/screens/Chat';
+import BlankChat from '~/screens/Chat/BlankChat';
 
-const DialogsStack = createStackNavigator({ Dialogs, Chat });
+const DialogsStack = createStackNavigator({ Dialogs, Chat, BlankChat });
 DialogsStack.navigationOptions = ({ navigation }) => {
   let tabBarVisible = true;
   if (navigation.state.index > 0) tabBarVisible = false;

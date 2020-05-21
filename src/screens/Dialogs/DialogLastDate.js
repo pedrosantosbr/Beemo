@@ -5,7 +5,7 @@ export default function DialogLastDate({ lastMessage, updatedDate }) {
   function getTime() {
     const monthes = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    const msgLastDate = lastMessage ? new Date(lastMessage * 1000) : new Date(updatedDate)
+    const msgLastDate = lastMessage ? lastMessage : new Date(updatedDate * 1000)
     const msgYear = msgLastDate.getFullYear()
     const msgMonth = msgLastDate.getMonth()
     const msgDate = msgLastDate.getDate()

@@ -82,8 +82,7 @@ class ChatService {
       this.xmppClientListeners.push({ name: 'disconnect', callback: callbackDisconnect });
 
       const callbackOnline = (jid) => {
-        console.log('[Chat]', 'ONLINE');
-        this._postConnectActions();
+        this._postConnectActions(isInitialConnect);
         resolve();
       };
       this.xmppClient.on('online', callbackOnline);
@@ -147,16 +146,19 @@ class ChatService {
     });
   }
 
-  send(jid, message) {
+  send(jidOrUserId, message) {
+    console.log('LOGGING JIDORUSERID', jidOrUserId)
     const stanzaParams = {
-      from: '21998859705@localhost',
-      to: jid + '@localhost',
+      from: this.helpers.getUserCurrentJid(),
+      to: this.helpers.jidOrUserId(jidOrUserId),
       type: message.type ? message.type : 'chat',
       id: message.id ? message.id : Utils.getBsonObjectId()
     };
 
+    // parse to xml
     let messageStanza = ChatUtils.createMessageStanza(stanzaParams);
 
+    // add body to xml
     if (message.body) {
       messageStanza
         .c('body', {
@@ -166,6 +168,7 @@ class ChatService {
         .up();
     }
 
+    // add markable attr
     if (message.markable) {
       messageStanza
         .c('markable', {
@@ -174,6 +177,7 @@ class ChatService {
         .up();
     }
 
+    // add extra params
     if (message.extension) {
       messageStanza.c('extraParams', {
         xmlns: 'jabber:client'
@@ -181,6 +185,8 @@ class ChatService {
 
       messageStanza = ChatUtils.filledExtraParams(messageStanza, message.extension);
     }
+
+    console.log('MESSAGE STANZA', messageStanza)
 
     this.xmppClient.send(messageStanza);
 
@@ -205,9 +211,7 @@ class ChatService {
 
   // Private Methods
   _onMessage(stanza) {
-    let forwaredStanza = ChatUtils.getElementTreePath(stanza, ['sent', 'forwarded', 'message']);
-
-    if (forwaredStanza) stanza = forwaredStanza;
+    console.log('ON MESSAGE', stanza.toString())
 
     let from = ChatUtils.getAttr(stanza, 'from'),
       type = ChatUtils.getAttr(stanza, 'type'),
@@ -223,17 +227,10 @@ class ChatService {
       extraParams = ChatUtils.getElement(stanza, 'extraParams'),
       bodyContent = ChatUtils.getElementText(stanza, 'body'),
       forwarded = ChatUtils.getElement(stanza, 'forwarded'),
-      extraParamsParsed,
-      recipientId,
-      recipient;
-
-    // console.log(stanza.toString())
-    const forwardedMessage = forwarded ? ChatUtils.getElement(forwarded, 'message') : null;
-
-    recipient = forwardedMessage ? ChatUtils.getAttr(forwardedMessage, 'to') : null;
-    recipientId = recipient ? this.helpers.getUserIdFromJID(recipient) : null;
+      extraParamsParsed;
 
     let senderId = this.helpers.getUserIdFromJID(from),
+      dialogId = null,
       marker = delivered || read || null;
 
     if (extraParams) {
@@ -244,35 +241,28 @@ class ChatService {
       }
     }
 
-    if (composing || paused) {
-      if (
-        typeof this.onMessageTypingListener === 'function' &&
-        (type === 'chat' || !delay)) {
-        ChatUtils.safeCallbackCall(this.onMessageTypingListener, !!composing, userId, dialogId);
-      }
+    // if (composing || paused) {
+    //   if (
+    //     typeof this.onMessageTypingListener === 'function' &&
+    //     (type === 'chat' || !delay)) {
+    //     ChatUtils.safeCallbackCall(this.onMessageTypingListener, !!composing, userId, dialogId);
+    //   }
 
-      return true;
-    }
+    //   return true;
+    // }
 
-    if (marker) {
-      if (delivered) {
-        console.log(['delivered'], delivered);
-      } else {
-        console.log(['read'], read);
-      }
-
-      return;
-    }
-
+    console.log('extra params', extraParamsParsed)
     const message = {
       id: messageId,
       type: type,
+      dialog_id: dialogId,
       body: bodyContent,
+      extension: extraParamsParsed ? extraParamsParsed.extension : null,
       sender_id: senderId
     };
 
     if (typeof this.onMessageListener === 'function' && type === 'chat' && bodyContent !== null)
-      ChatUtils.safeCallbackCall(this.onMessageListener, message)
+      ChatUtils.safeCallbackCall(this.onMessageListener, senderId, message)
   }
 
   _onPresence(stanza) {
@@ -293,8 +283,12 @@ class ChatService {
 
   _postConnectActions() {
     console.log('[Chat]', 'CONNECTED');
+
+    this.helpers.setUserCurrentJid(this.helpers.userCurrentJid(this.xmppClient));
+
     this.isConnected = true;
     this._isConnecting = false;
+
     this.xmppClient.send(xml('presence'));
   }
 

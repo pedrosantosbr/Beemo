@@ -1,4 +1,5 @@
-import DialogRepository from '~/repositories/dialog-repository'
+import DialogRepository, { update } from '~/repositories/dialog-repository'
+import Dialog from '~/models/dialog'
 
 const updateDialog = (action, dialogs) => {
   const alreadyUpdatedDialog = dialogs.map(elem => {
@@ -10,26 +11,43 @@ const updateDialog = (action, dialogs) => {
 }
 
 const sortedDialog = (action, dialogs) => {
+  let isCreated = false
   const { message, count } = action
   const updateDialog = dialogs.map(elem => {
     if (elem.id === message.dialog_id) {
+      isCreated = true;
       const newObj = {
+        last_message_id: message.id,
         last_message: message.body,
         last_message_date_sent: message.date_sent,
         updated_date: message.date_sent,
         unread_messages_count: count ? elem.unread_messages_count += 1 : elem.unread_messages_count
       }
       let newDialog = Object.assign(elem, newObj)
-      DialogRepository.update(newDialog)
+      console.log('inside of map', newDialog)
+      DialogRepository.createOrUpdate(newDialog)
       return newDialog
     } return elem
   })
+
+  if (!isCreated) {
+    console.log('antes do erro')
+    const newDialog = new Dialog({
+      user_id: message.sender_id,
+      last_message: message.body,
+      last_message_date_sent: message.date_sent,
+      last_message_id: message.id,
+      unread_messages_count: 1
+    });
+    console.log('dialog reducer', newDialog)
+    updateDialog.push(newDialog)
+    DialogRepository.createOrUpdate(newDialog)
+  }
 
   const sort = (items, inverted = false) => items.sort((itemA, itemB) => {
     const result = new Date(itemB.last_message_date_sent * 1000) - new Date(itemA.last_message_date_sent * 1000)
     return inverted ? !result : result
   })
-
 
   const result = sort(updateDialog)
 

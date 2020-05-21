@@ -17,15 +17,9 @@ export default class Message {
   constructor(msg = defaultMessage) {
     this.id = msg.id || msg._id
     this.body = msg.body || msg.message
-    this.date_sent = msg.date_sent || Date.now()
+    this.date_sent = msg.date_sent || (msg.extension && msg.extension.date_sent) || Math.floor(Date.now() / 1000)
     this.sender_id = msg.sender_id
-    this.dialog_id = Message.getDialogId(msg.sender_id)
-  }
-
-  static getDialogId(sender_id) {
-    const dialog = DialogRepository.getDialogBySenderId(sender_id)
-    if (!dialog) return null
-    return dialog.id
+    this.dialog_id = msg.dialog_id
   }
 
   static schema = {
@@ -35,7 +29,7 @@ export default class Message {
       id: { type: 'string', indexed: true },
       body: 'string',
       sender_id: 'string',
-      date_sent: 'int',
+      date_sent: 'date',
       dialog_id: 'string'
     }
   }
@@ -43,11 +37,10 @@ export default class Message {
 
 export class FakeMessage {
   constructor(msg) {
-    this.attachment = msg.extension.attachments
+    this.id = msg.id
     this.body = msg.body
     this.date_sent = msg.extension.date_sent
     this.dialog_id = msg.extension.dialog_id
-    this.id = msg.id
     this.send_state = 0
     this.sender = undefined
     this.sender_id = msg.extension.sender_id
