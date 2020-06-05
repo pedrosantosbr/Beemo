@@ -177,6 +177,37 @@ class ChatInternalUtils {
       dialogId: dialogId
     };
   }
+
+  static unixTime() {
+    return Math.floor(Date.now() / 1000)
+  }
+
+  static getBsonObjectId() {
+    const timestamp = this.unixTime().toString(16)
+    const increment = (ObjectId.increment++).toString(16)
+
+    if (increment > 0xffffff) ObjectId.increment = 0
+
+    return (
+      '00000000'.substr(0, 8 - timestamp.length) +
+      timestamp +
+      '000000'.substr(0, 6 - ObjectId.machine.length) +
+      ObjectId.machine +
+      '0000'.substr(0, 4 - ObjectId.pid.length) +
+      ObjectId.pid +
+      '000000'.substr(0, 6 - increment.length) +
+      increment
+    )
+  }
+
+}
+
+// The object for type MongoDB.Bson.ObjectId
+// http://docs.mongodb.org/manual/reference/object-id/
+const ObjectId = {
+  machine: Math.floor(Math.random() * 16777216).toString(16),
+  pid: Math.floor(Math.random() * 32767).toString(16),
+  increment: 0
 }
 
 module.exports = ChatInternalUtils;

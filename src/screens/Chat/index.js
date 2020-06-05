@@ -28,7 +28,7 @@ const Chat = ({ history, currentUser, navigation }) => {
 
   useEffect(() => {
     let { dialog } = navigation.state.params;
-    if (dialog.hasOwnProperty('id')) {
+    if (dialog.hasOwnProperty('user_id')) {
       ChatService.getMessages(dialog);
     }
   }, [])
@@ -57,12 +57,9 @@ const Chat = ({ history, currentUser, navigation }) => {
 
   const sendAttachment = () => { }
 
-  const _renderMessageItem = (message) => {
-    const isOtherSender = message.sender_id !== currentUser.id ? true : false
-    return (
-      <Message otherSender={isOtherSender} message={message} key={message.id} />
-    )
-  }
+  const _renderMessageItem = (message) => (
+    <Message otherSender={message.sender_id != currentUser.id} message={message} key={message.id} />
+  )
 
   const _keyExtractor = (item, index) => index.toString()
 
@@ -115,7 +112,6 @@ Chat.navigationOptions = ({ navigation }) => {
   return {
     headerTitle: () => (
       <Text numberOfLines={3} style={{ fontSize: 22, color: 'black' }}>
-        Pedro
       </Text>
     ),
     headerRight: () => (

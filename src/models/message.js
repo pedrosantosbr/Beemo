@@ -14,12 +14,17 @@ const defaultMessage = {
 }
 
 export default class Message {
-  constructor(msg = defaultMessage) {
+  constructor(msg = defaultMessage, currentUser) {
     this.id = msg.id || msg._id
     this.body = msg.body || msg.message
-    this.date_sent = msg.date_sent || (msg.extension && msg.extension.date_sent) || Math.floor(Date.now() / 1000)
     this.sender_id = msg.sender_id
-    this.dialog_id = msg.dialog_id
+    this.dialog_id = msg.dialog_id || (msg.extension && msg.extension.dialog_id)
+    this.send_state = Message.getSendState(msg, currentUser)
+    this.date_sent = msg.date_sent || (msg.extension && msg.extension.date_sent) || Math.floor(Date.now() / 1000)
+  }
+
+  static getSendState(msg, currentUser) {
+
   }
 
   static schema = {
@@ -27,10 +32,10 @@ export default class Message {
     primaryKey: 'id',
     properties: {
       id: { type: 'string', indexed: true },
+      dialog_id: 'string',
+      sender_id: 'int',
       body: 'string',
-      sender_id: 'string',
-      date_sent: 'date',
-      dialog_id: 'string'
+      date_sent: 'int',
     }
   }
 }

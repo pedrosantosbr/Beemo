@@ -31,6 +31,7 @@ const BlankChat = ({ navigation }) => {
   const onTypeMessage = messageText => setFormData({ ...formData, messageText })
 
   const sendMessage = async () => {
+
     let { messageText } = formData
     if (messageText.length <= 0) return
     await ChatService.sendMessage(dialog, messageText)

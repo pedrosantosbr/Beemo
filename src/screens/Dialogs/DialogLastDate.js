@@ -1,11 +1,12 @@
 import React from 'react'
 import { Text, StyleSheet } from 'react-native'
 
-export default function DialogLastDate({ lastMessage, updatedDate }) {
+export default function DialogLastDate({ lastDate, lastMessage, updatedDate }) {
+  console.log('timing', lastDate)
   function getTime() {
     const monthes = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-    const msgLastDate = lastMessage ? lastMessage : new Date(updatedDate * 1000)
+    const msgLastDate = lastMessage ? new Date(lastDate * 1000) : new Date(updatedDate)
     const msgYear = msgLastDate.getFullYear()
     const msgMonth = msgLastDate.getMonth()
     const msgDate = msgLastDate.getDate()

@@ -4,7 +4,7 @@ import ChatService from '~/services/chat-service';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 
 const ContactsList = ({ contacts, navigation, setModalVisible }) => {
-  const goToChat = (contact) => {
+  const goToChat = async (contact) => {
     const dialogs = store.getState().dialogs;
     const userId = contact.phoneNumbers[0].number;
     let dialog = undefined;
@@ -15,19 +15,16 @@ const ContactsList = ({ contacts, navigation, setModalVisible }) => {
       }
     });
 
-    if (!dialog || dialog == undefined) {
-      ChatService
-        .createDialog(userId)
-        .then(newDialog => {
-          console.log('novo dialogo criado', newDialog)
-          navigation.navigate('Chat', { dialog: newDialog });
-        });
-    } else {
-      navigation.navigate('Chat', { dialog });
-    }
+    setModalVisible(false)
 
-    setModalVisible(false);
+    if (!dialog || dialog == undefined) {
+      const newDialog = await ChatService.createDialog(userId)
+      navigation.navigate('Chat', { dialog: newDialog })
+      return
+    }
+    navigation.navigate('Chat', { dialog });
   }
+
   return (
     <View>
       {contacts.map((contact, index) => (

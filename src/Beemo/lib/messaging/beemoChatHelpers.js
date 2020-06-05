@@ -1,4 +1,5 @@
 const Config = require('../beemoConfig');
+const Utils = require('./beemoChatInternalUtils')
 
 class ChatHelpers {
   constructor() {
@@ -37,7 +38,9 @@ class ChatHelpers {
     return this._userCurrentJid;
   }
 
-
+  getBsonObjectId() {
+    return Utils.getBsonObjectId();
+  }
 }
 
 module.exports = ChatHelpers;

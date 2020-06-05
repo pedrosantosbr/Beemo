@@ -1,9 +1,8 @@
 class BeemoApp {
   init() {
-    const Chat = require('./messaging/beemoChat');
+    const Chat = require('./messaging/beemoChat')
 
-    this.chat = new Chat();
-    console.log('inited')
+    this.chat = new Chat()
   }
 }
 

@@ -201,7 +201,24 @@ class ChatService {
 
   sendDeliveredStatus(params) { }
 
-  sendReadStatus(params) { }
+  sendReadStatus(params) {
+    const stanzaParams = {
+      type: 'chat',
+      from: this.helpers.getUserCurrentJid(),
+      to: this.helpers.jidOrUserId(params.userId),
+      id: Utils.getBsonObjectId()
+    };
+
+    const messageStanza = ChatUtils.createMessageStanza(stanzaParams);
+    messageStanza
+      .c('displayed', {
+        xmlns: 'urn:xmpp:chat-markers:0',
+        id: params.messageId
+      })
+      .up();
+
+    this.xmppClient.send(messageStanza);
+  }
 
   getLastUserActivity(jidOrUserId) { }
 
@@ -235,21 +252,10 @@ class ChatService {
 
     if (extraParams) {
       extraParamsParsed = ChatUtils.parseExtraParams(extraParams);
-
       if (extraParamsParsed.dialogId) {
         dialogId = extraParamsParsed.dialogId;
       }
     }
-
-    // if (composing || paused) {
-    //   if (
-    //     typeof this.onMessageTypingListener === 'function' &&
-    //     (type === 'chat' || !delay)) {
-    //     ChatUtils.safeCallbackCall(this.onMessageTypingListener, !!composing, userId, dialogId);
-    //   }
-
-    //   return true;
-    // }
 
     console.log('extra params', extraParamsParsed)
     const message = {

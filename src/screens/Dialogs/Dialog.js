@@ -27,7 +27,8 @@ const Dialog = ({ dialog, navigation }) => {
           <DialogTitle name={dialog.user_id} message={dialog.last_message} />
           <View style={styles.infoContainer}>
             <DialogLastDate
-              lastMessage={dialog.last_message_date_set}
+              lastDate={dialog.last_message_date_sent}
+              lastMessage={dialog.last_message}
               updatedDate={dialog.updated_date}
             />
             <DialogUnreadCounter

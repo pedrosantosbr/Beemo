@@ -1,21 +1,26 @@
 import Database from '~/Database'
+import Dialog from '~/models/dialog'
 
-exports.createOrUpdate = (d) => {
+exports.createOrUpdate = (payload) => {
+  const dialog = new Dialog(payload)
+
   try {
     Database.shared.realm.write(() => {
       Database.shared.realm.create('Dialog', {
-        id: d.id,
-        user_id: d.user_id,
-        updated_at: new Date(d.updated_date * 1000),
-        last_message: d.last_message,
-        last_message_id: d.last_message_id,
-        last_message_date_sent: new Date(d.last_message_date_sent * 1000),
-        unread_messages_count: d.unread_messages_count,
-        unread_messages_ids: d.unread_messages_ids
+        id: dialog.id,
+        user_id: parseInt(dialog.user_id),
+        last_message: dialog.last_message,
+        last_message_id: dialog.last_message_id,
+        last_message_date_sent: parseInt(dialog.last_message_date_sent) || null,
+        unread_messages_count: dialog.unread_messages_count,
+        unread_messages_ids: dialog.unread_messages_ids,
+        updated_at: new Date(dialog.updated_date)
       }, 'modified')
-    });
+    })
+    return dialog
   } catch (e) {
     console.warn('erro em dialog repository', e);
+    return null
   }
 }
 
