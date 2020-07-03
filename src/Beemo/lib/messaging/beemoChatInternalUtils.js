@@ -13,6 +13,10 @@ class ChatInternalUtils {
     return xml('presence', params);
   }
 
+  static createNonza(elementName, params) {
+    return xml(elementName, params);
+  }
+
   static getElement(stanza, elName) {
     let el;
 
@@ -23,6 +27,30 @@ class ChatInternalUtils {
     }
 
     return el;
+  }
+
+  static getAllElements(stanza, elName) {
+    let el;
+    if (typeof stanza.querySelectorAll === 'function') {
+      el = stanza.querySelectorAll(elName);
+    } else if (typeof stanza.getChild === 'function') {
+      el = stanza.getChild(elName);
+    }
+
+    return el;
+  }
+
+  static getElementText(stanza, elName) {
+    let el, txt;
+
+    if (typeof stanza.querySelector === 'function') {
+      el = stanza.querySelector(elName);
+      txt = el ? el.textContent : null;
+    } else if (typeof stanza.getChildText === 'function') {
+      txt = stanza.getChildText(elName);
+    }
+
+    return txt;
   }
 
   static getElementTreePath(stanza, elementsPath) {
@@ -198,6 +226,50 @@ class ChatInternalUtils {
       '000000'.substr(0, 6 - increment.length) +
       increment
     )
+  }
+
+  static DLog() {
+    if (this.loggers) {
+      for (let i = 0; i < this.loggers.length; ++i) {
+        this.loggers[i](arguments)
+      }
+
+      return
+    }
+
+    let logger
+
+    this.loggers = []
+
+    const consoleLoggerFunction = function () {
+      const logger = function (args) {
+        console.log.apply(console, Array.prototype.slice.call(args))
+      }
+
+      return logger
+    }
+
+    if (typeof config.debug === 'object') {
+      if (typeof config.debug.mode === 'number') {
+        if (config.debug.mode == 1) {
+          logger = consoleLoggerFunction()
+          this.loggers.push(logger)
+        }
+      } else if (typeof config.debug.mode === 'object') {
+        config.debug.mode.forEach(function (mode) {
+          if (mode === 1) {
+            logger = consoleLoggerFunction()
+            this.loggers.push(logger)
+          }
+        })
+      }
+    }
+
+    if (this.loggers) {
+      for (let j = 0; j < this.loggers.length; ++j) {
+        this.loggers[j](arguments)
+      }
+    }
   }
 
 }

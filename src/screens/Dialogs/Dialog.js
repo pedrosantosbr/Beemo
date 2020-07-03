@@ -19,7 +19,7 @@ const Dialog = ({ dialog, navigation }) => {
     <TouchableOpacity onPress={() => getOccupants()}>
       <View style={styles.container}>
         <Avatar
-          photo={{ uri: 'https://s.gravatar.com/avatar/e6d8a87880d0588818e1586943c6eee1?s=80' }}
+          photo={dialog.avatar}
           name='pedro'
           iconSize='large'
         />
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     paddingHorizontal: 10,
     backgroundColor: '#fff'
   },

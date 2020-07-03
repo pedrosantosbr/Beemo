@@ -19,12 +19,8 @@ export default class Message {
     this.body = msg.body || msg.message
     this.sender_id = msg.sender_id
     this.dialog_id = msg.dialog_id || (msg.extension && msg.extension.dialog_id)
-    this.send_state = Message.getSendState(msg, currentUser)
+    this.send_state = msg.send_state || 0
     this.date_sent = msg.date_sent || (msg.extension && msg.extension.date_sent) || Math.floor(Date.now() / 1000)
-  }
-
-  static getSendState(msg, currentUser) {
-
   }
 
   static schema = {
@@ -36,10 +32,10 @@ export default class Message {
       sender_id: 'int',
       body: 'string',
       date_sent: 'int',
+      send_state: { type: 'int?', default: 0 }
     }
   }
 }
-
 export class FakeMessage {
   constructor(msg) {
     this.id = msg.id

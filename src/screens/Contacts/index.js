@@ -2,6 +2,7 @@ import React from 'react';
 import store from '~/store';
 import ChatService from '~/services/chat-service';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
+import { Container, Header, Content, List, ListItem } from 'native-base';
 
 const ContactsList = ({ contacts, navigation, setModalVisible }) => {
   const goToChat = async (contact) => {
@@ -26,15 +27,20 @@ const ContactsList = ({ contacts, navigation, setModalVisible }) => {
   }
 
   return (
-    <View>
-      {contacts.map((contact, index) => (
-        <TouchableOpacity key={index} onPress={() => goToChat(contact)}>
-          <View style={styles.contact}>
-            <Text>{contact.givenName} - <Text> {contact.phoneNumbers[0].number} </Text></Text>
-          </View>
-        </TouchableOpacity>
-      ))}
-    </View>
+    <Container>
+      <Content>
+        <ListItem itemDivider>
+          <Text>Contatos</Text>
+        </ListItem>
+        <List>
+          {contacts.map((contact, index) => (
+            <ListItem key={index} onPress={() => goToChat(contact)}>
+              <Text>{contact.givenName} </Text>
+            </ListItem>
+          ))}
+        </List>
+      </Content>
+    </Container>
   )
 }
 

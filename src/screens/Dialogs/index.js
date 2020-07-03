@@ -20,6 +20,7 @@ const fullWidth = Dimensions.get('window').width;
 const fullHeight = Dimensions.get('window').height;
 
 const Dialogs = ({ navigation, dialogs }) => {
+  console.log('LIST OF DIALOGS', dialogs)
   const [modalVisible, setModalVisible] = useState(false)
 
   useEffect(() => {
@@ -66,9 +67,6 @@ const Dialogs = ({ navigation, dialogs }) => {
               <TouchableOpacity onPress={() => setModalVisible(false)}>
                 <Text style={{ color: 'rgb(0, 164, 219)' }}>cancelar</Text>
               </TouchableOpacity>
-            </View>
-            <View style={styles.modalDivider}>
-              <Text style={styles.modalTextDivider}> CONTATOS RECENTES </Text>
             </View>
             <ContactList setModalVisible={setModalVisible} navigation={navigation} contacts={this.contacts} />
           </View>

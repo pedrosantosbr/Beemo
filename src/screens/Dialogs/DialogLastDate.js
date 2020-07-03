@@ -2,7 +2,6 @@ import React from 'react'
 import { Text, StyleSheet } from 'react-native'
 
 export default function DialogLastDate({ lastDate, lastMessage, updatedDate }) {
-  console.log('timing', lastDate)
   function getTime() {
     const monthes = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']

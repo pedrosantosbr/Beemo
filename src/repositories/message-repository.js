@@ -8,6 +8,7 @@ exports.create = (message) => {
       dialog_id: message.dialog_id,
       sender_id: parseInt(message.sender_id),
       date_sent: parseInt(message.date_sent),
+      send_state: parseInt(message.send_state)
     })
   })
 }

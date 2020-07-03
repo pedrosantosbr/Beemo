@@ -1,5 +1,4 @@
 import DialogRepository from '~/repositories/dialog-repository'
-import ChatService from '~/services/chat-service'
 
 const updateDialog = (action, dialogs) => {
   const alreadyUpdatedDialog = dialogs.map(elem => {
@@ -11,11 +10,9 @@ const updateDialog = (action, dialogs) => {
 }
 
 const sortedDialog = (action, dialogs) => {
-  let isCreated = false
   const { message, count } = action
   const updateDialog = dialogs.map(elem => {
     if (elem.id == message.dialog_id) {
-      isCreated = true;
       const newObj = {
         last_message_id: message.id,
         last_message: message.body,
@@ -28,14 +25,6 @@ const sortedDialog = (action, dialogs) => {
       return newDialog
     } return elem
   })
-
-  if (!isCreated) {
-    ChatService
-      .createDialog(message.sender_id, message)
-      .then(dialog => {
-        updateDialog.push(dialog)
-      })
-  }
 
   const sort = (items, inverted = false) => items.sort((itemA, itemB) => {
     const result = new Date(itemB.last_message_date_sent * 1000) - new Date(itemA.last_message_date_sent * 1000)

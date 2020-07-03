@@ -12,7 +12,7 @@ class Database {
     try {
       Realm.open({
         schema: [Dialog.schema, Message.schema],
-        schemaVersion: 21,
+        schemaVersion: 23,
         migration: (oldRealm, newRealm) => { }
       }).then(realm => {
         console.log(realm.path)

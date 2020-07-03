@@ -23,10 +23,11 @@ const Avatar = ({ photo, name, iconSize }) => {
     }
   }
 
+
   // !!!!!!! remember to remove Image.style
   return (
     <View>
-      <Image style={styles.photo} source={photo} />
+      <Image style={styles.photo} source={photo ? photo : require('~/assets/img/user-thumb.png')} />
     </View>
   )
 }
@@ -34,8 +35,8 @@ const Avatar = ({ photo, name, iconSize }) => {
 const extraLargeIcon = StyleSheet.create({
   photo: {
     borderRadius: 50,
-    height: 100,
-    width: 100,
+    height: 70,
+    width: 70,
     marginRight: 5,
     justifyContent: 'center',
     alignItems: 'center'

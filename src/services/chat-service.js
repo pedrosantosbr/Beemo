@@ -6,13 +6,15 @@ import Database from '~/Database'
 import DialogRepository from '~/repositories/dialog-repository'
 import MessageRepository from '~/repositories/message-repository'
 import { sortDialogs, addNewDialog, fetchDialogs, updateDialog } from '../actions/dialogs'
-import { fetchMessages } from '../actions/messages'
+import { fetchMessages, updateMessages } from '../actions/messages'
 import { selectDialog, unselectDialog } from '~/actions/selectedDialog'
 import { pushMessage } from '../actions/messages'
 import Dialog from '~/models/dialog'
-import { v5 as uuidv5 } from 'uuid';
-
-const MY_NAMESPACE = '1b671a64-40d5-491e-99b0-da01ff1f3341';
+import {
+  STATUS_DELIVERED,
+  STATUS_READ,
+  STATUS_SENT
+} from '~/models/message'
 
 class ChatService {
   setUpListeners() {
@@ -27,7 +29,6 @@ class ChatService {
     const dialogs = []
 
     Database.shared.realm.objects('Dialog').forEach((elem) => {
-      console.log(elem)
       let dialog = new Dialog(elem)
       dialogs.push(dialog)
     })
@@ -37,6 +38,7 @@ class ChatService {
 
   updateDialogsUnreadMessagesCount = (dialog) => {
     const updateObj = Object.assign(dialog, { unread_messages_count: 0 })
+    DialogRepository.createOrUpdate(updateObj)
     store.dispatch(updateDialog(updateObj))
     return true
   }
@@ -64,8 +66,8 @@ class ChatService {
       console.log('second entry')
       // If the second entry into the chat
       if (dialog.unread_messages_count > 0) {
+        const messages = this.getMessagesByDialogId(dialog.id)
         const firstUnreadMsg = messages[dialog.unread_messages_count - 1]
-        console.log()
         store.dispatch(fetchMessages(dialog.id, isAlredyUpdate))
         this.updateDialogsUnreadMessagesCount(dialog)
       }
@@ -116,7 +118,6 @@ class ChatService {
   }
 
   async createDialog(recipientId, message = null) {
-    console.log('NEW ID', this.generateDialogId(recipientId))
     payload = {
       id: this.generateDialogId(recipientId),
       user_id: recipientId,
@@ -130,6 +131,7 @@ class ChatService {
     }
 
     let newDialog = await DialogRepository.createOrUpdate(payload)
+
     store.dispatch(addNewDialog(newDialog))
     return newDialog
   }
@@ -144,18 +146,19 @@ class ChatService {
 
   handleAppStateChange = (AppState) => {
     if (AppState === 'active') {
-      ConnectyCube.chat.markActive()
+      BeemoApp.chat.markActive()
     } else {
-      ConnectyCube.chat.markInactive()
+      BeemoApp.chat.markInactive()
     }
   }
 
-  // ConnectyCube listeners
+  // BeemoChat listeners
   onSentMessageListener(failedMessage, msg) {
     if (failedMessage) {
       return
     }
     store.dispatch(updateMessages(msg.extension.dialog_id, msg.id, { send_state: STATUS_SENT }))
+    MessageRepository.update({ ...msg, send_state: 1 })
   }
 
   onDeliveredStatus(messageId, dialogId, userId) {
@@ -210,7 +213,7 @@ class ChatService {
 
   generateDialogId(id) {
     let x = Math.floor(parseInt(id) / 9)
-    let y = Math.floor(parseInt(this.currentUser.id) / 9)
+    let y = Math.floor(parseInt(BeemoApp.chat.getCurrentUser()) / 9)
     let result = Math.floor(x * y / 1000)
     let dialogId = `${result.toString(16)}${result}`
 

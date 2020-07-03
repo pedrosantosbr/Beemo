@@ -112,12 +112,13 @@ Chat.navigationOptions = ({ navigation }) => {
   return {
     headerTitle: () => (
       <Text numberOfLines={3} style={{ fontSize: 22, color: 'black' }}>
+        {navigation.state.params.dialog.user_id}
       </Text>
     ),
     headerRight: () => (
       <TouchableOpacity onPress={() => goToDetailsScreen(navigation)}>
         <Avatar
-          photo={{ uri: 'https://s.gravatar.com/avatar/e6d8a87880d0588818e1586943c6eee1?s=80' }}
+          photo={require('~/assets/img/user-thumb.png')}
           name='pedro'
           iconSize="small"
         />

@@ -10,13 +10,13 @@ import {
 export default MessageSendState = ({ send_state }) => {
   switch (send_state) {
     case STATUS_PENDING:
-      return (<Icon name="query-builder" size={16} color="grey" />)
+      return (<Icon name="query-builder" size={16} color="white" />)
     case STATUS_SENT:
-      return (<Icon name="done" size={16} color="grey" />)
+      return (<Icon name="done" size={16} color="white" />)
     case STATUS_DELIVERED:
-      return (<Icon name="done-all" size={16} color="#389046" />)
+      return (<Icon name="done-all" size={16} color="white" />)
     case STATUS_READ:
-      return (<Icon name="done-all" size={18} color="#147EFB" />)
+      return (<Icon name="done-all" size={18} color="white" />)
   }
   return (null)
 }

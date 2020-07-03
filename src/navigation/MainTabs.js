@@ -6,9 +6,10 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Dialogs from '~/screens/Dialogs';
 import Posts from '~/screens/Posts';
 import Chat from '~/screens/Chat';
-import BlankChat from '~/screens/Chat/BlankChat';
+import Settings from '~/screens/Settings';
+import Contacts from '~/screens/Contacts';
 
-const DialogsStack = createStackNavigator({ Dialogs, Chat, BlankChat });
+const DialogsStack = createStackNavigator({ Dialogs, Chat });
 DialogsStack.navigationOptions = ({ navigation }) => {
   let tabBarVisible = true;
   if (navigation.state.index > 0) tabBarVisible = false;
@@ -17,9 +18,12 @@ DialogsStack.navigationOptions = ({ navigation }) => {
 
 const PostsStack = createStackNavigator({ Posts });
 
+const SettingsStack = createStackNavigator({ Settings }, { headerMode: 'none' });
+
 const MainTabs = createBottomTabNavigator({
   Posts: PostsStack,
-  Dialogs: DialogsStack
+  Dialogs: DialogsStack,
+  Settings: SettingsStack
 }, {
     defaultNavigationOptions: ({ navigation }) => ({
       tabBarIcon: ({ focused, horizontal, tintColor }) => {
@@ -30,6 +34,9 @@ const MainTabs = createBottomTabNavigator({
         }
         if (routeName === 'Dialogs') {
           iconName = 'ios-chatbubbles';
+        }
+        if (routeName === 'Settings') {
+          iconName = 'ios-settings';
         }
         return <Icon name={iconName} color={tintColor} size={25} />
       },

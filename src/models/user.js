@@ -3,6 +3,7 @@ export default class User {
     this.id = user.jid
     this.uid = user.uid
     this.name = user.name
+    this.photo_url = user.photo_url
     this.created_at = user.created_at
     this.updated_at = user.updated_at
   }
@@ -12,14 +13,15 @@ export default class User {
   }
 
   static schema = {
-    name: 'Message',
+    name: 'User',
     primaryKey: 'id',
     properties: {
       id: { type: 'string', indexed: true },
-      dialog_id: 'int',
-      sender_id: 'int',
-      body: 'string',
-      date_sent: 'int',
+      uuid: 'string',
+      name: 'string',
+      photo_url: 'string',
+      created_at: 'date',
+      updated_at: 'date'
     }
   }
 }

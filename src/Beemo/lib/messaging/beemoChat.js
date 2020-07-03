@@ -1,11 +1,11 @@
-import { jid, xml } from '@xmpp/client';
-import XMPPClient from '@xmpp/client/react-native';
-import Config from '../beemoConfig';
-import ChatUtils from './beemoChatInternalUtils';
-import ChatHelpers from './beemoChatHelpers';
+import { jid, xml } from '@xmpp/client'
+import XMPPClient from '@xmpp/client/react-native'
+import Config from '../beemoConfig'
+import ChatUtils from './beemoChatInternalUtils'
+import ChatHelpers from './beemoChatHelpers'
+import StreamManagement from './beemoStreamManagement'
 
 const debug = require('@xmpp/debug')
-
 class ChatService {
   constructor() {
     this.xmppClient = XMPPClient.client({
@@ -30,6 +30,17 @@ class ChatService {
     this._checkConnectionTimer = undefined;
 
     this.xmppClientListeners = [];
+
+    this.streamManagement = new StreamManagement()
+    this._sentMessageCallback = (messageLost, messageSent) => {
+      if (typeof this.onSentMessageCallback === 'function') {
+        if (messageSent) {
+          this.onSentMessageCallback(null, messageSent);
+        } else {
+          this.onSentMessageCallback(messageLost);
+        }
+      }
+    };
   }
 
   // Public Methods
@@ -107,7 +118,6 @@ class ChatService {
         } else if (stanza.is('iq')) {
           this._onIQ(stanza);
         } else if (stanza.is('message')) {
-          console.log(stanza)
           if (stanza.attrs.type === 'headline') {
             this._onSystemMessageListener(stanza);
           } else if (stanza.attrs.type === 'error') {
@@ -152,7 +162,7 @@ class ChatService {
       from: this.helpers.getUserCurrentJid(),
       to: this.helpers.jidOrUserId(jidOrUserId),
       type: message.type ? message.type : 'chat',
-      id: message.id ? message.id : Utils.getBsonObjectId()
+      id: message.id ? message.id : ChatUtils.getBsonObjectId()
     };
 
     // parse to xml
@@ -186,9 +196,8 @@ class ChatService {
       messageStanza = ChatUtils.filledExtraParams(messageStanza, message.extension);
     }
 
-    console.log('MESSAGE STANZA', messageStanza)
-
-    this.xmppClient.send(messageStanza);
+    message.id = stanzaParams.id
+    this.xmppClient.send(messageStanza, message)
 
     return stanzaParams.id;
   }
@@ -199,7 +208,30 @@ class ChatService {
 
   sendIsStopTypingStatus(jidOrUserId) { }
 
-  sendDeliveredStatus(params) { }
+  sendDeliveredStatus(params) {
+    const stanzaParams = {
+      type: 'chat',
+      from: this.helpers.getUserCurrentJid(),
+      id: ChatUtils.getBsonObjectId(),
+      to: this.helpers.jidOrUserId(params.userId)
+    };
+
+    const messageStanza = ChatUtils.createMessageStanza(stanzaParams);
+    messageStanza
+      .c('received', {
+        xmlns: 'urn:xmpp:chat-markers:0',
+        id: params.messageId
+      })
+      .up();
+    messageStanza
+      .c('extraParams', {
+        xmlns: 'jabber:client'
+      })
+      .c('dialog_id')
+      .t(params.dialogId);
+
+    this.xmppClient.send(messageStanza);
+  }
 
   sendReadStatus(params) {
     const stanzaParams = {
@@ -228,8 +260,6 @@ class ChatService {
 
   // Private Methods
   _onMessage(stanza) {
-    console.log('ON MESSAGE', stanza.toString())
-
     let from = ChatUtils.getAttr(stanza, 'from'),
       type = ChatUtils.getAttr(stanza, 'type'),
       messageId = ChatUtils.getAttr(stanza, 'id'),
@@ -246,7 +276,7 @@ class ChatService {
       forwarded = ChatUtils.getElement(stanza, 'forwarded'),
       extraParamsParsed;
 
-    let senderId = this.helpers.getUserIdFromJID(from),
+    let userId = this.helpers.getUserIdFromJID(from),
       dialogId = null,
       marker = delivered || read || null;
 
@@ -257,18 +287,47 @@ class ChatService {
       }
     }
 
-    console.log('extra params', extraParamsParsed)
+    if (marker) {
+      if (delivered) {
+        if (typeof this.onDeliveredStatusListener === 'function' && type === 'chat') {
+          ChatUtils.safeCallbackCall(
+            this.onDeliveredStatusListener,
+            ChatUtils.getAttr(delivered, 'id'),
+            dialogId,
+            userId
+          );
+        }
+      } else {
+        if (typeof this.onReadStatusListener === 'function' && type === 'chat') {
+          ChatUtils.safeCallbackCall(this.onReadStatusListener, ChatUtils.getAttr(read, 'id'), dialogId, userId);
+        }
+      }
+
+      return;
+    }
+
+    // autosend 'received' status (ignore messages from yourself)
+    if (markable && userId != this.helpers.getUserIdFromJID(this.helpers.userCurrentJid(this.xmppClient))) {
+      const autoSendReceiveStatusParams = {
+        messageId,
+        userId,
+        dialogId
+      };
+
+      this.sendDeliveredStatus(autoSendReceiveStatusParams);
+    }
+
     const message = {
       id: messageId,
       type: type,
       dialog_id: dialogId,
       body: bodyContent,
       extension: extraParamsParsed ? extraParamsParsed.extension : null,
-      sender_id: senderId
+      sender_id: userId
     };
 
     if (typeof this.onMessageListener === 'function' && type === 'chat' && bodyContent !== null)
-      ChatUtils.safeCallbackCall(this.onMessageListener, senderId, message)
+      ChatUtils.safeCallbackCall(this.onMessageListener, userId, message)
   }
 
   _onPresence(stanza) {
@@ -289,6 +348,10 @@ class ChatService {
 
   _postConnectActions() {
     console.log('[Chat]', 'CONNECTED');
+
+    // enabling stream management
+    this.streamManagement.enable(this.xmppClient);
+    this.streamManagement.sentMessageCallback = this._sentMessageCallback;
 
     this.helpers.setUserCurrentJid(this.helpers.userCurrentJid(this.xmppClient));
 
@@ -317,6 +380,10 @@ class ChatService {
     this._checkConnectionTimer = setInterval(() => {
       _connect();
     }, 5 * 1000);
+  }
+
+  getCurrentUser() {
+    return this.helpers.getUserCurrentJid()
   }
 
 }
